@@ -1,6 +1,73 @@
 
-![STEM Notes AI Architecture](./docs/STEM_Notes-AI.png)
+### System Architecture
+```mermaid
+graph TD
+    graph TD
+    %% Custom Styling matching Draw.io colors and borders
+    classDef redBox fill:#f8cecc,stroke:#b85450,stroke-width:1px,color:#000
+    classDef blueBox fill:#dae8fc,stroke:#6c8ebf,stroke-width:1px,color:#000
+    classDef greenBox fill:#d5e8d4,stroke:#82b366,stroke-width:1px,color:#000
+    classDef yellowBox fill:#ffcd28,stroke:#d79b00,stroke-width:1px,color:#000
+    classDef purpleHex fill:#e6d0de,stroke:#996185,stroke-width:1px,color:#000
+    classDef yellowCyl fill:#fff2cc,stroke:#d6b656,stroke-width:1px,color:#000
 
+    %% Subgraph 1: The Agentic Tutor
+    subgraph Tutor ["<b>The Agentic Tutor</b>"]
+        User["<b>User/Student</b>"]:::redBox
+        LangGraph["<b>LangGraph Orchestrator</b>"]:::greenBox
+        MCP["<b>MCP Interface</b>"]:::blueBox
+    end
+
+    %% Subgraph 2: The Extraction Factory
+    subgraph Factory ["<b>The Extraction Factory</b>"]
+        FastAPI["<b>FastAPI Gateway</b>"]:::blueBox
+        Worker["<b>Celery/Redis Worker</b>"]:::blueBox
+        YTDLP["<b>yt-dlp Engine</b>"]:::blueBox
+        OpenCV["<b>OpenCV Vision</b>"]:::blueBox
+        Whisper["<b>Open AI Whisper</b>"]:::blueBox
+    end
+
+    %% Subgraph 3: Synthesis Engine
+    subgraph Synthesis ["<b>Synthesis Engine</b>"]
+        Scribe["<b>LLM Note Scribe</b>"]:::yellowBox
+        Notes{{"<b>Master Study Notes</b><br/><b>PDF/MD File</b>"}}:::purpleHex
+    end
+
+    %% Subgraph 4: The Knowledge Vault
+    subgraph Vault ["<b>The Knowledge Vault</b>"]
+        SQL[("<b>SQL DB</b>")]:::yellowCyl
+        VecEmb["<b>Vector Embeddings</b>"]:::blueBox
+        VecDB[("<b>Vector Database</b><br/><i>Chroma/Pinecone<br/>or Milvus</i>")]:::yellowCyl
+    end
+
+    %% Diagram Flows (Edges) with exact labels
+    User == "<b>Request</b><br/><b>YouTube Url/Video</b>" ==> FastAPI
+    FastAPI --> Worker
+    Worker --> YTDLP
+
+    YTDLP -->|"<b>Video Stream</b>"| OpenCV
+    YTDLP -->|"<b>Audio<br/>Stream</b>"| Whisper
+
+    OpenCV -->|"<b>Visual Math</b>"| Scribe
+    Whisper -->|"<b>Timestamps</b>"| Scribe
+
+    Scribe -->|"<b>Markdown/LaTex</b>"| Notes
+
+    Notes == "<b>Response</b><br/><b>Notes</b><br/><i>(Pdf/Md files)</i>" ==> User
+
+    Notes -->|"<b>Metadata</b>"| SQL
+    Notes -->|"<b>Chunking</b>"| VecEmb
+    VecEmb --> VecDB
+
+    User -->|"<b>Query</b>"| LangGraph
+    LangGraph -->|"<b>Structured Response</b>"| User
+
+    LangGraph <-->|"<b>Tools: Wolfram/Tavily</b>"| MCP
+
+    VecDB -->|"<b>Context Retrieval</b>"| LangGraph
+    Notes -->|"<b>Source of Truth</b>"| LangGraph
+
+```
 
 # 📖 STEM-Notes AI: Folder Manifest
 
