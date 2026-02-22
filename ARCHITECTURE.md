@@ -1,3 +1,7 @@
+
+![STEM Notes AI Architecture](./docs/STEM_Notes-AI.png)
+
+
 # 📖 STEM-Notes AI: Folder Manifest
 
 ## 📁 `app/api/`

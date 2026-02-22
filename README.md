@@ -86,7 +86,7 @@ pip install -r requirements.txt
 Copy the environment template and add your API keys:
 
 ```bash
-cp .env.example .env
+cp .env .env
 ```
 
 Edit .env to include your specific credentials:
