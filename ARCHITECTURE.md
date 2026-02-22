@@ -1,6 +1,4 @@
-                                                                                              # 📖 STEM-Notes AI: Folder Manifest
-
-
+# 📖 STEM-Notes AI: Folder Manifest
 
 ## 📁 `app/api/`
 **The Front Desk (Web Layer)**
