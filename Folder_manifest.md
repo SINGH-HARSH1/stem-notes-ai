@@ -1,6 +1,3 @@
-
-<img src="./docs/arch.png" alt="STEM Notes AI Architecture" width="600" />
-
 # 📖 STEM-Notes AI: Folder Manifest
 
 ## 📁 `app/api/`
