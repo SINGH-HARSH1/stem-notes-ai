@@ -1,5 +1,5 @@
 
-<img src="./docs/Light_theme_final_Diagram.png" alt="STEM Notes AI Architecture" width="600" />
+<img src="./docs/Final_Arch_diagram.png" alt="STEM Notes AI Architecture" width="600" />
 
 
 ### Explanation of the Architecture Diagram: 
