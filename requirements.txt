@@ -30,3 +30,5 @@ redis>=5.1.0
 
 # Protocol Support
 fastmcp>=0.4.1
+pydantic
+pydantic-settings
