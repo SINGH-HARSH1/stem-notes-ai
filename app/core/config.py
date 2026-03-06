@@ -55,7 +55,7 @@ class Settings(BaseSettings):
 
 
 @lru_cache()
-def get_settings() -> Settings:  # <--- THIS IS THE FIX. DO NOT IGNORE IT AGAIN.
+def get_settings() -> Settings:
     """
     Dependency Injection provider for settings.
     Using lru_cache ensures we don't re-read settings multiple times.
