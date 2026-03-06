@@ -1,10 +1,33 @@
+import aiohttp
+import logging
+import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
+
+from app.api.router import router as main_router
+from app.core.config import settings
+
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup code can be added here (e.g., connect to databases, initialize resources)
+    print(f"Starting up the {settings.app.name} app...")
+    session =  aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=settings.app.timeout))
+    app.state.client_session = session
+    try:
+        yield
+    finally:
+        # Shutdown code can be added here (e.g., close database connections, clean up resources)
+        print("Shutting down the STEM-Notes AI API...")
+        await session.close()
 
 app = FastAPI(
-    title="STEM-Notes AI",
-    description="Agentic RAG Backend for high-fidelity STEM note-taking.",
-    version="0.1.0"
+    title=settings.app.name,
+    description=settings.app.description,
+    version=settings.app.version,
+    lifespan=lifespan
 )
 
 # Enable CORS for frontend or browser extension connectivity
@@ -15,6 +38,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(main_router)
+
 @app.get("/")
 async def root():
     return {
@@ -23,6 +48,7 @@ async def root():
         "docs": "/docs"
     }
 
-@app.get("/health")
-async def health_check():
-    return {"status": "healthy"}
+logger = logging.getLogger(__name__)
+
+if __name__ == "__main__":
+    uvicorn.run("main:app", host=settings.app.host, port=settings.app.port, log_level=settings.app.log_level, workers=settings.api.workers)

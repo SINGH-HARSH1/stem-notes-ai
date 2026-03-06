@@ -11,10 +11,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 class AppConfig(BaseModel):
     name: str = Field(default="STEM Notes AI")
+    description: str = Field(default="Agentic RAG Backend for high-fidelity STEM note-taking.")
     version: str = Field(default="0.1.0")
     debug: bool = False
     env: Literal["local", "dev", "staging", "prod"] = "local"
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
+    timeout: int = Field(default=55, ge=1, le=300)  # API request timeout in seconds
 
     @model_validator(mode="after")
     def validate_prod(self):
