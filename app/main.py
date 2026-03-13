@@ -51,4 +51,4 @@ async def root():
 logger = logging.getLogger(__name__)
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host=settings.app.host, port=settings.app.port, log_level=settings.app.log_level, workers=settings.api.workers)
+    uvicorn.run("app.main:app", host=settings.app.host, port=settings.app.port, log_level=settings.app.log_level, workers=settings.api.workers)
