@@ -22,3 +22,5 @@ async def health_check(settings: Annotated[Settings, Depends(get_settings)]) -> 
     }
     return health_info
 
+# Create a separate endpoint for readiness check if needed, which can include checks for database connectivity, external API availability, etc.
+
