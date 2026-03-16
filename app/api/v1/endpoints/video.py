@@ -4,7 +4,7 @@ from app.schemas.videos import VideoIngestRequest, VideoIngestResponse, VideoSta
 from app.utils.generic_methods import generate_unique_id
 from app.core.database import get_db
 from app.models.video_task import VideoTask
-from app.db.database_crud.crud import fetch_video_details_by_id
+from app.db.database_crud.crud import fetch_video_details_by_id, create_video_task
 from typing import Annotated
 
 
@@ -14,24 +14,18 @@ AsyncSessionDep = Annotated[AsyncSession, Depends(get_db)]
 
 @router.post("/ingest", status_code=status.HTTP_202_ACCEPTED, response_model=VideoIngestResponse)
 async def ingest_video(request: VideoIngestRequest, db: AsyncSessionDep):
-    video_processing_task_id = generate_unique_id("Stem_Notes_Ai_transaction_id_")
+    video_processing_task_id = generate_unique_id("task_")
 
-    new_task = VideoTask(
-        id=video_processing_task_id,
-        url = request.url,
-        depth = request.depth.value,
-    )
-    db.add(new_task)
-    await db.commit()
+    await create_video_task(db=db, task_id=video_processing_task_id, url=request.url, depth=request.depth.value)
 
-    initial_response = VideoIngestResponse(
+    response = VideoIngestResponse(
         message = "Video Processing Task Request Received, Processing--Notes Generation Started",
         video_processing_task_id = str(video_processing_task_id),
         youtube_url=request.url,
         depth=request.depth.value,
         status = "PENDING"
     )
-    return initial_response
+    return response
 
 
 @router.get("/status/{task_id}", response_model=VideoStatusTaskOut)
