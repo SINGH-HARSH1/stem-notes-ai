@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field, field_validator
 from enum import Enum
 from urllib.parse import urlparse, parse_qs
+from pydantic import ConfigDict
 
 
 class SummaryDepth(str, Enum):
@@ -36,5 +37,21 @@ class VideoIngestRequest(BaseModel):
         if not video_id or len(video_id) != 11:
             raise ValueError("Invalid YouTube URL. Please provide a valid URL, Incorrect Video ID")
         return url
+
+
+class VideoIngestResponse(BaseModel):
+    message: str = Field(description="Message Response to User for request processing", default="Video Processing Task Request Received, Processing--Notes Generation Started")
+    video_processing_task_id: str = Field(..., description="Task ID for Video Ingestion", validation_alias="id")
+    youtube_url: str = Field(..., description="Youtube URL given by USer for Video Ingestion", validation_alias="url")
+    depth: str = Field(..., description="Summary depth of the video to be generated")
+    status: str = Field(..., description="Current Status of the video to be generated")
+
+    model_config = ConfigDict(from_attributes=True,
+                              populate_by_name=True)
+
+
+class VideoStatusTaskOut(VideoIngestResponse):
+    pass
+
 
 

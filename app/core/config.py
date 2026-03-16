@@ -30,7 +30,8 @@ class ApiConfig(BaseModel):
     workers: int = Field(default=2, ge=1, le=16)
 
 class DatabaseConfig(BaseModel):
-    url: PostgresDsn
+    url: PostgresDsn  # will configure later
+
 
 class BrokerConfig(BaseModel):
     url: RedisDsn

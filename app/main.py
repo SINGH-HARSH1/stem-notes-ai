@@ -1,19 +1,24 @@
 import aiohttp
 import logging
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, Response, status
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
 from app.api.router import router as main_router
 from app.core.config import settings
+from app.core.database import Base, engine
+from app.models.video_task import VideoTask
 
-
+__all__ = ["Base", "VideoTask"]
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup code can be added here (e.g., connect to databases, initialize resources)
     print(f"Starting up the {settings.app.name} app...")
+
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
     session =  aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=settings.app.timeout))
     app.state.client_session = session
     try:
@@ -30,6 +35,10 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon():
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
 # Enable CORS for frontend or browser extension connectivity
 app.add_middleware(
     CORSMiddleware,
@@ -39,6 +48,7 @@ app.add_middleware(
 )
 
 app.include_router(main_router)
+
 
 @app.get("/")
 async def root():
