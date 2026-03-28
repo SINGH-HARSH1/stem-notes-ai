@@ -24,17 +24,15 @@ async def create_video_task(db: AsyncSession, task_id: str, url: str, depth: str
         logger.error(f"Database error while creating task {task_id}: {e}")
         raise
 
-async def update_task_status(db: AsyncSession, task_id: str, status: str):
-    """
-        Updates the status of an existing VideoTask by its ID.
-        Commits the change if the task is found.
-    """
+async def update_task_status(db: AsyncSession, task_id: str, status: str, failure_reason: str = None):
     try:
         stmt = select(VideoTask).where(VideoTask.id == task_id)
         result = await db.execute(stmt)
         task = result.scalar_one_or_none()
         if task:
             task.status = status
+            if failure_reason:
+                task.failure_reason = failure_reason
             await db.commit()
     except SQLAlchemyError as e:
         await db.rollback()
@@ -54,3 +52,19 @@ async def fetch_video_details_by_id(db: AsyncSession, video_id: str) -> Optional
     except SQLAlchemyError as e:
         logger.error(f"Error fetching video {video_id}: {e}")
         return None
+
+async def save_task_results(db: AsyncSession, task_id: str, transcript: str, source: str, notes: str):
+    try:
+        stmt = select(VideoTask).where(VideoTask.id == task_id)
+        result = await db.execute(stmt)
+        task = result.scalar_one_or_none()
+        if task:
+            task.raw_transcript = transcript
+            task.transcript_source = source
+            task.generated_notes = notes
+            task.status = "COMPLETED"
+            await db.commit()
+    except SQLAlchemyError as e:
+        await db.rollback()
+        logger.error(f"Error saving results for task {task_id}: {e}")
+        raise

@@ -209,3 +209,5 @@ yarl==1.23.0
 yt-dlp==2026.3.13
 zipp==3.23.0
 zstandard==0.25.0
+
+youtube-transcript-api
