@@ -10,7 +10,6 @@ class SummaryDepth(str, Enum):
     COMPREHENSIVE = "comprehensive"
 
 
-
 class VideoIngestRequest(BaseModel):
     url : str = Field(..., description="The URL of the video to ingest")
     depth: SummaryDepth = Field(description="The summary depth of the video to be generated", default=SummaryDepth.STANDARD)
@@ -45,6 +44,8 @@ class VideoIngestResponse(BaseModel):
     youtube_url: str = Field(..., description="Youtube URL given by USer for Video Ingestion", validation_alias="url")
     depth: str = Field(..., description="Summary depth of the video to be generated")
     status: str = Field(..., description="Current Status of the video to be generated")
+    generated_notes: str | None = None
+    failure_reason: str | None = None
 
     model_config = ConfigDict(from_attributes=True,
                               populate_by_name=True)
